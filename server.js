@@ -30,6 +30,10 @@ app.set('views', './views/pug');
 
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
+  
+  const ensureAuthenticated = (req, res, next) {
+    if (req.isAuthenticated)
+  }
 
   app.route('/').get((req, res) => {
     res.render('index', { title: 'Connected to Database', message: 'Please login', showLogin: true });
@@ -39,7 +43,14 @@ myDB(async client => {
     res.redirect('/profile')
   })
 
-  app.route('/profile').get((req,res) => {
+  function ensureAuthenticated(req, res, next){
+    if (req.isAuthenticated()){
+      return next();
+    }
+    res.redirect('/');
+  }
+
+  app.route('/profile').get(ensureAuthenticated, (req,res) => {
     res.render('profile');
   })
 
