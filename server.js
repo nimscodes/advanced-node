@@ -39,15 +39,9 @@ myDB(async client => {
     res.redirect('/profile')
   })
 
-  function ensureAuthenticated(req, res, next){
-    if (req.isAuthenticated()){
-      return next();
-    }
-    res.redirect('/');
-  }
-
+  
   app.route('/profile').get(ensureAuthenticated, (req,res) => {
-    res.render('profile');
+    res.render('profile', { username: req.user.username });
   })
 
   passport.serializeUser((user, done) => {
@@ -75,6 +69,14 @@ myDB(async client => {
     res.render('index', { title: e, message: 'Unable to connect to database'});
   })
 })
+
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()){
+    return next();
+  }
+  res.redirect('/');
+}
+
 
 
 
