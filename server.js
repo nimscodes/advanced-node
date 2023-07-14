@@ -7,10 +7,12 @@ const passport = require("passport");
 const session = require("express-session");
 const routes = require('./routes.js');
 const auth = require('./auth.js');
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+
 
 const app = express();
+
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 fccTesting(app); //For FCC testing purposes
 app.use("/public", express.static(process.cwd() + "/public"));
@@ -41,7 +43,7 @@ myDB(async (client) => {
     console.log('A user has connected');
   })
 
-  
+
   
 }).catch((e) => {
   app.route("/").get((req, res) => {
