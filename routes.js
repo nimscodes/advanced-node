@@ -76,6 +76,15 @@ module.exports = function (app, myDataBase) {
       app.use((req, res, next) => {
         res.status(404).type("text").send("Not Found");
       });
+
+      app.use((req, res, next) => {
+        res.setHeader(
+          "Content-Security-Policy",
+          "default-src 'self'; img-src 'self' https://chat-app-node-2ec2ce225024.herokuapp.com; script-src 'self'"
+        );
+        next();
+      });
+      
 }
 
 const ensureAuthenticated = (req, res, next) => {
