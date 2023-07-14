@@ -2,9 +2,7 @@ $(document).ready(function () {
   /*global io*/
   let socket = io();
   socket.on('user count', function(data) {
-    s
-    console.log(data)
-
+    console
   })
   // Form submittion with new message in field with id 'm'
   $('form').submit(function () {
