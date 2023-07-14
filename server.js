@@ -30,10 +30,6 @@ app.set('views', './views/pug');
 
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
-  
-  const ensureAuthenticated = (req, res, next) {
-    if (req.isAuthenticated)
-  }
 
   app.route('/').get((req, res) => {
     res.render('index', { title: 'Connected to Database', message: 'Please login', showLogin: true });
