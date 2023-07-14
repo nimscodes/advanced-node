@@ -7,15 +7,15 @@ const session = require('express-session');
 const passport = require('passport');
 const routes = require('./routes.js');
 const auth = require('./auth.js');
-const passportSocketIo = require('passport.socketio');
-const cookieParser = require('cookie-parser');
+
 
 
 const app = express();
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-
+const passportSocketIo = require('passport.socketio');
+const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo')(session);
 const URI = process.env.MONGO_URI;
 const store = new MongoStore({ url: URI });
@@ -60,7 +60,11 @@ myDB(async client => {
   let currentUsers = 0;
   io.on('connection', (socket) => {
     ++currentUsers;
-    io.emit('user count', currentUsers);
+    io.emit('user', {
+      username: socket.request.user.username,
+      currentUsers,
+      connected: true
+    })
     socket.on('disconnect', () => {
       console.log('A user has disconnected');
       --currentUsers;
