@@ -8,20 +8,38 @@ const passport = require('passport');
 const routes = require('./routes.js');
 const auth = require('./auth.js');
 
+
 const app = express();
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+
+const MongoStore = require('connect-mongo')(session);
+const URI = process.env.MONGO_URI;
+const store = new MongoStore({ url: URI });
 
 app.set('view engine', 'pug');
 app.set('views', './views/pug');
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
+  key: 'express.sid',
   resave: true,
+  store: store,
   saveUninitialized: true,
   cookie: { secure: false }
 }));
+
+io.use(
+  passportSocketIo.authorize({
+    cookieParser: cookieParser,
+    key: 'express.sid',
+    secret: process.env.SESSION_SECRET,
+    store: store,
+    success: onAuthorizeSuccess,
+    fail: onAuthorizeFail
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -46,7 +64,7 @@ myDB(async client => {
       --currentUsers;
       io.emit('user count', currentUsers);
     })
-    console.log('A user has connected');
+    console.log('user ' + socket.request.user.username + ' connected');
   });
   
 }).catch(e => {
@@ -54,6 +72,18 @@ myDB(async client => {
     res.render('index', { title: e, message: 'Unable to connect to database' });
   });
 });
+
+function onAuthorizeSuccess(data, accept) {
+  console.log('successful connection to socket.io');
+
+  accept(null, true);
+}
+
+function onAuthorizeFail(data, message, error, accept) {
+  if (error) throw new Error(message);
+  console.log('failed connection to socket.io:', message);
+  accept(null, false);
+}
   
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
