@@ -15,17 +15,6 @@ module.exports = function (app, myDataBase) {
           done(null, doc);
         });
       });
-      
-      passport.use(new GithubStrategy({
-        clientID: process.env.GITHUB_CLIENT.ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: 'https://chat-app-node-2ec2ce225024.herokuapp.com/auth/github/callback'
-      },
-        function(accessToken, refreshToken, profile, cb) {
-            console.log(profile)
-            //Database logic here with callback containing your user object
-        }
-      ))
     
       passport.use(
         new LocalStrategy((username, password, done) => {
@@ -38,4 +27,15 @@ module.exports = function (app, myDataBase) {
           });
         })
       );
+
+      passport.use(new GithubStrategy({
+        clientID: process.env.GITHUB_CLIENT.ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: 'https://chat-app-node-2ec2ce225024.herokuapp.com/auth/github/callback'
+      },
+        function(accessToken, refreshToken, profile, cb) {
+            console.log(profile)
+            //Database logic here with callback containing your user 
+        }
+      ));
 }
