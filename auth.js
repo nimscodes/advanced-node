@@ -2,6 +2,7 @@ const passport = require('passport')
 const { ObjectID } = require("mongodb");
 const LocalStrategy = require("passport-local");
 const bcrypt = require('bcrypt');
+const GithubStrategy = require('passport-github').Strategy;
 
 module.exports = function (app, myDataBase) {
 
@@ -14,6 +15,17 @@ module.exports = function (app, myDataBase) {
           done(null, doc);
         });
       });
+      
+      passport.use(new GithubStrategy({
+        clientID: process.env.GITHUB_CLIENT.ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: 'https://chat-app-node-2ec2ce225024.herokuapp.com/auth/github/callback'
+      },
+        function(accessToken, refreshToken, profile, cb) {
+            console.log(profile)
+            //Database logic here with callback containing your user object
+        }
+      ))
     
       passport.use(
         new LocalStrategy((username, password, done) => {
