@@ -12,9 +12,20 @@ module.exports = function (app, myDataBase) {
     });
   });
 
-  app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+//   app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+//     res.redirect('/profile');
+//   });
+
+app.route('/login').post((req, res, next) => {
+    if(req.isAuthenticated()) {
+      res.redirect('/chat');
+    } else {
+      passport.authenticate('local', { failureRedirect: '/' })(req, res, next);
+    }
+  }, (req, res) => {
     res.redirect('/profile');
   });
+  
 
   app.route('/profile').get(ensureAuthenticated, (req,res) => {
     res.render('profile', { username: req.user.username });
@@ -56,7 +67,7 @@ module.exports = function (app, myDataBase) {
   },
     passport.authenticate('local', { failureRedirect: '/' }),
     (req, res, next) => {
-        req.session.user_id = req.user.id;
+    req.session.user_id = req.user.id;
       res.redirect('/chat');
     }
   );
